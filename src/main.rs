@@ -1,55 +1,157 @@
 use std::io;
 
+struct Player {
+    name: String,
+    icon: String,
+    first_player: bool,
+    highscore: u32,
+}
+
 fn main() {
-    //intro();
-    //game_field();
-    game_loop();
-}
-fn intro() {
 
-    let mut field = ["1","2","3","4","5","6","7","8","9"];
+    let player = player_setup();
 
-    println!("Willkommen im Tic Tac Toe Spiel in Rust!!!\n\nGebe deinen Spielernamen 1 ein!");
-    let mut player1 = String::new();
-    let mut player2 = String::new();
+    let mut a = ["X", "X", "X", " ", " ", " ", " ", " ", " "];
+    let a = gamefield(a);
+    gameloop(&player, a);
 
-        io::stdin()
-            .read_line(&mut player1)
-            .expect("Konnte Namen nicht einlesen werden!");
-        print!("Dein Spielername ist {}\n Gebe deinen Spielernamen 2 ein!", player1);
-    
-        io::stdin()
-        .read_line(&mut player2)
-        .expect("Konnte Namen nicht einlesen werden!");
-    print!("Dein Spielername ist {}", player2);
-    print!("Es spielt {player1} gegen {player2}");
-
-}
-fn game_loop(){
-
-    println!("X ist am Zug!\nWähle ein Feld!");
-
-    let mut field_choice = String::new();
-
-    io::stdin()
-            .read_line(&mut field_choice)
-            .expect("Fehler beim einlesen des Feldes!");
-
-    match field_choice.trim().parse::<i32>() {
-        Ok(value) => {
-            if (1..=9).contains(&value)  {
-                
-            } else {
-                println!("Das Feld existiert nicht")
-            }
-        }
-        Err(_) => {
-            println!("Falsche Eingabe!")
-        }
+    for s in a.iter() {
+        println!("{}", s);
     }
 }
-fn game_field(field: str[]){
 
-    println!("-------------\n| {} | {} | {} |\n-------------\n| {} | {} | {} |\n-------------\n| {} | {} | {} |\n-------------\n",
-     field[0], field[1],field[2],field[3],field[4],field[5],field[6],field[7],field[8]);
+fn gamefield(a: [&str; 9]) -> [&str; 9]{
+
+    
+
+    println!("\n-------------");
+    println!("| {:} | {:} | {:} |", a[0], a[1], a[2]);
+    println!("-------------");
+    println!("| {:} | {:} | {:} |", a[3], a[4], a[5]);
+    println!("-------------");
+    println!("| {:} | {:} | {:} |", a[6], a[7], a[8]);
+    println!("-------------");
+    a
 }
+fn player_setup() -> Player{
+    println!("Willkommen im TicTacToe!!!\n\n");
+
+    loop {
+        println!("Wähle (E)inzelspieler oder (M)ehrspieler?");
+
+        let mut mode = String::new();
+
+        io::stdin().read_line(&mut mode)
+            .expect("Konnte Modus nicht erkennen!!!!");
+
+        let mode = mode.trim();
+
+        let valid_mode = ['E', 'e', 'M', 'm'];
+
+        if mode.chars().all(|c| valid_mode.contains(&c)){
+            break;
+        }
+        else {
+            println!("Falsche Eingabe! versuche es nochmal!!!")
+        
+        }
+    }
+    
+        println!("Gebe deinen Namen ein");
+
+        let mut player_name = String::new();
+        
+
+        io::stdin().read_line(&mut player_name)
+            .expect("Konnte Icon nicht erkennen!!!!");
+        let player_name = player_name.trim();
+
+        let valid_icon = ['X', 'x', 'O', 'o', '0'];
+
+        println!("Hallo {:}!!!", player_name);
+
+        let mut player_icon = String::new();
+    loop {
+        println!("Wähle dein Zeichen (X) oder (O)");
+
+        
+        
+
+        io::stdin().read_line(&mut player_icon)
+            .expect("Konnte Icon nicht erkennen!!!!");
+        let player_icon = player_icon.trim();
+
+        let valid_icon = ['X', 'x', 'O', 'o', '0'];
+
+        if player_icon.chars().all(|c| valid_icon.contains(&c)){
+            break;
+        }
+        else {
+            println!("Falsche Eingabe! versuche es nochmal!!!")
+        
+        }
+    }
+
+    Player {
+        name: player_name.to_string(),
+        icon: player_icon.to_string(),
+        first_player: true,
+        highscore: 0,
+    }
+}
+
+
+fn gameloop(player: &Player, a: [&str; 9]){
+    println!("Spieler {:} ist am Zug", player.name);
+    println!("Wähle dein Feld!!");
+    let mut playmove = String::new();
+    
+    loop {
+        io::stdin().read_line(&mut playmove)
+            .expect("Konnte Feld nicht erkennen!!!!");
+        let playmove = playmove.trim();
+
+        let valid_fields = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+
+        if playmove.chars().all(|c| valid_fields.contains(&c)) && a[playmove.parse::<usize>().unwrap() -1] != " "{
+            break;
+        }
+        else {
+            println!("Falsche Eingabe! versuche es nochmal!!!")
+        
+        }
+        wincondition(a);
+
+
+    }
+fn wincondition(arr: [&str; 9]){
+
+    let mut game = ["X", "X", "O", " ", " ", " ", " ", " ", " "];
+    let mut win = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], 
+        [0, 4, 8], [2, 4, 6]
+        ];
+
+        for combo in win.iter() {
+            let [a, b, c] = *combo;
+
+            if game[a] != " " && arr[a] == game[b] && game[a] == game[c] {
+                println!("Gewonnen");
+            }
+        }
+    
+
+        
+
+
+
+}
+
+//Player 1 am Zug
+//gameloop
+//wincondition
+}
+
+
